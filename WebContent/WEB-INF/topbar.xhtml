@@ -1,0 +1,39 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:pu="http://primefaces.org/ultima">
+
+	<div class="topbar clearfix">
+		<div class="topbar-left">
+			<div class="logo"></div>
+		</div>
+
+		<div class="topbar-right">
+			<a id="menu-button" href="#"> <i></i>
+			</a> <a id="topbar-menu-button" href="#"> <i class="material-icons">&#xE5D2;</i>
+			</a>
+			<ul class="topbar-items fadeInDown animated">
+				<ui:fragment rendered="#{menuLayoutMB.profileMode == 'overlay'||menuLayoutMB.menuLayout == 'menu-layout-static menu-layout-horizontal'}">
+					<li class="profile-item"><a href="#">
+							<div class="profile-image"></div> <span class="topbar-item-name"><p:outputLabel value="#{sessionManaged.usuarioLogado.nome}" /></span>
+					</a></li>
+				</ui:fragment>
+				<li><a href="#"> <i class="topbar-icon material-icons">&#xE8B8;</i> <span class="topbar-item-name">Configurações</span>
+				</a>
+					<ul class="ultima-menu animated">
+						<li role="menuitem"><a href="troca.jsf"> <i class="fa fa-key"></i> <span>Trocar Senha</span>
+						</a></li>
+						<li role="menuitem"><a href="login.jsf"> <i class="material-icons">&#xE8AC;</i><span>Sair</span></a></li>
+					</ul></li>
+
+				<li><a href="#"> <i class="topbar-icon material-icons">&#xE425;</i><span class="topbar-item-name">Informações</span>
+				</a>
+					<ul class="ultima-menu animated">
+						<li role="menuitem"><a href="index.jsp" target="_blank"> <i class="fa fa-user"></i> <span>Atendimento</span>
+						</a></li>
+						<li role="menuitem"><a href="sobre.jsf"> <i class="fa fa-info-circle"></i> <span>Atualizações</span>
+						</a></li>
+					</ul></li>
+			</ul>
+		</div>
+	</div>
+
+</ui:composition>

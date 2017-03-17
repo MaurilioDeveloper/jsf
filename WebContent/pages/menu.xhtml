@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Cadastro de Menu</ui:define>
+
+	<ui:define name="head"></ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="pnPrincipal">
+			<h:inputHidden id="id" value="#{menuMB.entity.id}" />
+
+			<h:panelGroup id="pnMenu">
+				<p:dialog widgetVar="dlg" modal="true" id="dlgMenu" responsive="true" styleClass="Wid780">
+
+					<p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group" id="pnlMenu">
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="nome" value="#{menuMB.entity.nome}" required="true" styleClass="Wid340" maxlength="50" />
+							<p:outputLabel for="nome" value="Nome" />
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="icone" value="#{menuMB.entity.icone}" required="true" styleClass="Wid340" maxlength="50" />
+							<p:outputLabel for="icone" value="Icone" />
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="status" value="Status" />
+							<p:selectOneMenu id="status" value="#{menuMB.entity.status}" label="Status" required="true" layout="grid" styleClass="Wid340">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Status" itemValue="#{null}" />
+								<f:selectItems value="#{menuMB.status}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+					</p:panelGrid>
+
+					<h:panelGroup styleClass="MarLeft15">
+						<p:commandButton id="persist" icon="ui-icon-save" value="Salvar" actionListener="#{menuMB.actionPersist}" update=":exemplojsf:pnPrincipal" process="@this, :exemplojsf:pnlMenu"
+							oncomplete="handleDialogSubmit(xhr, status, args)" styleClass="MarTop10 MarBottom10" />
+					</h:panelGroup>
+				</p:dialog>
+			</h:panelGroup>
+
+			<p:commandButton icon="ui-icon-add" resetValues="true" styleClass="BotaoCrud secondary flat" actionListener="#{menuMB.actionNew}" process="@this" oncomplete="PF('dlg').show();"
+				update=":exemplojsf:pnPrincipal" />
+
+			<p:commandButton icon="ui-icon-edit" resetValues="true" styleClass="BotaoCrud orange-btn" onclick="PF('dlg').show();" rendered="#{menuMB.entity.id != null}" type="button" />
+
+			<p:commandButton icon="ui-icon-remove" styleClass="BotaoCrud red-btn" rendered="#{menuMB.entity.id != null}" actionListener="#{menuMB.actionRemove}" update=":exemplojsf:tbMenu"
+				process="@this" />
+
+			<p:dataTable emptyMessage="Nenhum menu Encontrado" id="tbMenu" value="#{menuMB.entityList}" var="menu" rows="10" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+				paginator="true" rowKey="#{menu}" selection="#{menuMB.entity}" selectionMode="single">
+				<f:facet name="header">Lista de Menus</f:facet>
+				<p:ajax event="rowSelect" update=":exemplojsf:pnPrincipal" resetValues="true" />
+				<p:column filterBy="#{menu.nome}" sortBy="#{menu.nome}" filterMatchMode="contains" headerText="Nome">
+					<h:outputText value="#{menu.nome}" />
+				</p:column>
+				<p:column filterBy="#{menu.icone}" filterMatchMode="contains" headerText="Icone" sortBy="#{menu.icone}">
+					<h:outputText value="#{menu.iconeImagem}  #{menu.icone}" escape="false" />
+				</p:column>
+				<p:column filterBy="#{menu.statusStr}" filterMatchMode="contains" headerText="Status" sortBy="#{menu.statusStr}">
+					<h:outputText value="#{menu.statusStr}" />
+				</p:column>
+			</p:dataTable>
+		</h:panelGroup>
+		<script type="text/javascript">
+			function handleDialogSubmit(xhr, status, args) {
+				if (args.validationFailed) {
+					PF('dlg').show();
+				} else {
+					PF('dlg').hide();
+				}
+			}
+		</script>
+	</ui:define>
+</ui:composition>

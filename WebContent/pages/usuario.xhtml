@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Cadastro de Usuario</ui:define>
+
+	<ui:define name="head"></ui:define>
+
+	<ui:define name="content">
+
+		<h:panelGroup id="pnPrincipal">
+			<h:inputHidden id="id" value="#{usuarioMB.entity.id}" />
+
+			<h:panelGroup id="pnUsuario">
+				<p:dialog widgetVar="dlg" responsive="true" modal="true" id="dlgusuario" styleClass="Wid780">
+					<p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group" id="pnlUsuario">
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="nome" value="#{usuarioMB.entity.nome}" required="true" styleClass="Wid340" maxlength="100" />
+							<p:outputLabel for="nome" value="Nome" />
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="email" value="#{usuarioMB.entity.email}" required="true" styleClass="Wid340" maxlength="100" />
+							<p:outputLabel for="email" value="E-mail" />
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="login" value="#{usuarioMB.entity.login}" disabled="#{usuarioMB.editar}" required="true" styleClass="Wid340" maxlength="14" />
+							<p:outputLabel for="login" value="Login" />
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="perfil" value="Perfil" />
+							<p:selectOneMenu id="perfil" value="#{usuarioMB.entity.perfil}" label="Perfil" required="true" layout="grid" styleClass="Wid340" converter="perfil">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Perfil" itemValue="#{null}" />
+								<f:selectItems value="#{usuarioMB.perfis}" var="perfil" itemLabel="#{perfil.nome}" itemValue="#{perfil}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="status" value="Status" />
+							<p:selectOneMenu id="status" value="#{usuarioMB.entity.status}" required="true" label="Status" layout="grid" styleClass="Wid340">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Status" itemValue="#{null}" />
+								<f:selectItems value="#{usuarioMB.status}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+					</p:panelGrid>
+
+					<h:panelGroup styleClass="MarLeft15">
+						<p:commandButton id="persist" icon="ui-icon-save" value="Salvar" actionListener="#{usuarioMB.actionPersist}" update=":exemplojsf:pnPrincipal" process="@this, :exemplojsf:pnlUsuario"
+							oncomplete="handleDialogSubmit(xhr, status, args)" styleClass="MarTop10 MarBottom10" />
+					</h:panelGroup>
+				</p:dialog>
+			</h:panelGroup>
+
+			<h:panelGroup>
+				<div class="ui-g ui-fluid">
+					<div class="ui-g-12 ui-lg-12">
+						<div class="ui-g-12 ui-lg-2"></div>
+						<div class="ui-g-12 ui-lg-8">
+							<div class="card card-w-title">
+								<h1>Filtros</h1>
+								<p:panelGrid columns="1" styleClass="form-group ui-panelgrid-blank" layout="grid">
+									<h:panelGroup>
+										<p:outputLabel for="empresa" value="Empresa" />
+										<p:selectOneMenu id="empresa" value="#{usuarioMB.empresaSelecionada}" label="Empresa" filter="true" filterMatchMode="contains" layout="grid" converter="empresa">
+											<p:ajax process="@this" update=":exemplojsf:pnPrincipal" listener="#{usuarioMB.carregarEntityList}" />
+											<f:selectItem noSelectionOption="true" itemLabel="Selecione uma Empresa" itemValue="#{null}" />
+											<f:selectItems value="#{usuarioMB.empresas}" var="empresa" itemLabel="#{empresa.nome}" itemValue="#{empresa}" />
+										</p:selectOneMenu>
+										<p:message styleClass="msg" for="empresa" />
+									</h:panelGroup>
+								</p:panelGrid>
+							</div>
+							<div class="ui-g-12 ui-lg-2"></div>
+						</div>
+					</div>
+				</div>
+			</h:panelGroup>
+
+			<p:commandButton icon="ui-icon-add" resetValues="true" styleClass="BotaoCrud secondary flat" actionListener="#{usuarioMB.actionNew}" process="@this"
+				oncomplete="PF('dlg').show();" update=":exemplojsf:pnPrincipal" rendered="#{usuarioMB.empresaSelecionada != null}" />
+
+			<p:commandButton icon="ui-icon-edit" resetValues="true" update=":exemplojsf:pnUsuario" process="@this" styleClass="BotaoCrud orange-btn" oncomplete="PF('dlg').show();"
+				rendered="#{usuarioMB.entity.id != null}" />
+
+			<p:commandButton icon="ui-icon-remove" styleClass="BotaoCrud red-btn" rendered="#{usuarioMB.entity.id != null}" actionListener="#{usuarioMB.actionRemove}"
+				update=":exemplojsf:tbusuario" resetValues="true" process="@this" />
+
+			<p:dataTable emptyMessage="Nenhum usuario encontrado" id="tbusuario" value="#{usuarioMB.entityList}" var="usuario" rows="10" paginatorPosition="bottom"
+				paginatorAlwaysVisible="true" paginator="true" rowKey="#{usuario}" selection="#{usuarioMB.entity}" selectionMode="single">
+				<f:facet name="header">Lista de Usuários</f:facet>
+				<p:ajax event="rowSelect" update=":exemplojsf:pnPrincipal" resetValues="true" />
+				<p:column filterBy="#{usuario.nome}" sortBy="#{usuario.nome}" filterMatchMode="contains" headerText="Razão Social">
+					<h:outputText value="#{usuario.nome}" />
+				</p:column>
+				<p:column filterBy="#{usuario.email}" filterMatchMode="contains" headerText="E-mail" sortBy="#{usuario.email}">
+					<h:outputText value="#{usuario.email}" />
+				</p:column>
+				<p:column filterBy="#{usuario.empresa.nome}" filterMatchMode="contains" headerText="Empresa" sortBy="#{usuario.empresa.nome}">
+					<h:outputText value="#{usuario.empresa.nome}" />
+				</p:column>
+				<p:column filterBy="#{usuario.statusStr}" filterMatchMode="contains" headerText="Status" sortBy="#{usuario.statusStr}">
+					<h:outputText value="#{usuario.statusStr}" />
+				</p:column>
+			</p:dataTable>
+		</h:panelGroup>
+		<script type="text/javascript">
+			function handleDialogSubmit(xhr, status, args) {
+				if (args.validationFailed) {
+					PF('dlg').show();
+				} else {
+					PF('dlg').hide();
+				}
+			}
+		</script>
+	</ui:define>
+</ui:composition>

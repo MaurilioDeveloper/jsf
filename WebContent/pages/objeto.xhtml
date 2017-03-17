@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Cadastro de Objetos</ui:define>
+
+	<ui:define name="head"></ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="pnPrincipal">
+			<h:inputHidden id="id" value="#{objetoMB.entity.id}" />
+
+			<h:panelGroup id="pnObjeto">
+				<p:dialog widgetVar="dlg" modal="true" id="dlgObjeto" responsive="true" styleClass="Wid780">
+					<p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group" id="pnlObjeto">
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="nome" value="#{objetoMB.entity.objeto}" required="true" styleClass="Wid340" maxlength="50" />
+							<p:outputLabel for="nome" value="Nome" />
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="desc" value="#{objetoMB.entity.descricao}" required="true" styleClass="Wid340" maxlength="50" />
+							<p:outputLabel for="desc" value="Descrição" />
+						</h:panelGroup>
+
+						<h:panelGroup styleClass="md-inputfield">
+							<p:inputText id="icone" value="#{objetoMB.entity.icone}" required="true" styleClass="Wid340" maxlength="50" />
+							<p:outputLabel for="icone" value="Icone" />
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="menu" value="Menu" />
+							<p:selectOneMenu id="menu" value="#{objetoMB.entity.menu}" label="Menu" required="true" layout="grid" styleClass="Wid340" converter="menu">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Menu" itemValue="#{null}" />
+								<f:selectItems value="#{objetoMB.menus}" var="menu" itemLabel="#{menu.nome}" itemValue="#{menu}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="status" value="Status" />
+							<p:selectOneMenu id="status" value="#{objetoMB.entity.status}" label="Status" required="true" layout="grid" styleClass="Wid340">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Status" itemValue="#{null}" />
+								<f:selectItems value="#{objetoMB.status}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+
+					</p:panelGrid>
+					<h:panelGroup styleClass="MarLeft15">
+						<p:commandButton id="persist" icon="ui-icon-save" value="Salvar" actionListener="#{objetoMB.actionPersist}" update=":exemplojsf:pnPrincipal" process="@this, :exemplojsf:pnlObjeto"
+							oncomplete="handleDialogSubmit(xhr, status, args)" styleClass="MarTop10 MarBottom10" />
+					</h:panelGroup>
+				</p:dialog>
+			</h:panelGroup>
+
+			<p:commandButton icon="ui-icon-add" resetValues="true" styleClass="BotaoCrud secondary flat" actionListener="#{objetoMB.actionNew}" process="@this"
+				oncomplete="PF('dlg').show();" update=":exemplojsf:pnPrincipal" />
+
+			<p:commandButton icon="ui-icon-edit" resetValues="true" styleClass="BotaoCrud orange-btn" onclick="PF('dlg').show();" rendered="#{objetoMB.entity.id != null}" type="button" />
+
+			<p:commandButton icon="ui-icon-remove" styleClass="BotaoCrud red-btn" rendered="#{objetoMB.entity.id != null}" actionListener="#{objetoMB.actionRemove}" update=":exemplojsf:tbObjeto"
+				process="@this" />
+
+			<p:dataTable emptyMessage="Nenhum objeto Encontrado" id="tbObjeto" value="#{objetoMB.entityList}" var="objeto" rows="10" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+				paginator="true" rowKey="#{objeto}" selection="#{objetoMB.entity}" selectionMode="single">
+				<f:facet name="header">Lista de Objetos</f:facet>
+				<p:ajax event="rowSelect" update=":exemplojsf:pnPrincipal" resetValues="true" />
+				<p:column filterBy="#{objeto.objeto}" sortBy="#{objeto.objeto}" filterMatchMode="contains" headerText="Nome">
+					<h:outputText value="#{objeto.objeto}" />
+				</p:column>
+				<p:column filterBy="#{objeto.descricao}" filterMatchMode="contains" headerText="Descrição" sortBy="#{objeto.descricao}">
+					<h:outputText value="#{objeto.descricao}" />
+				</p:column>
+				<p:column filterBy="#{objeto.icone}" filterMatchMode="contains" headerText="Icone" sortBy="#{objeto.icone}">
+					<h:outputText value="#{objeto.iconeImagem}  #{objeto.icone}" escape="false" />
+				</p:column>
+				<p:column filterBy="#{objeto.statusStr}" filterMatchMode="contains" headerText="Status" sortBy="#{objeto.statusStr}">
+					<h:outputText value="#{objeto.statusStr}" />
+				</p:column>
+				<p:column filterBy="#{objeto.menu.nome}" filterMatchMode="contains" headerText="Menu" sortBy="#{objeto.menu.nome}">
+					<h:outputText value="#{objeto.menu.nome}" />
+				</p:column>
+			</p:dataTable>
+		</h:panelGroup>
+		<script type="text/javascript">
+			function handleDialogSubmit(xhr, status, args) {
+				if (args.validationFailed) {
+					PF('dlg').show();
+				} else {
+					PF('dlg').hide();
+				}
+			}
+		</script>
+	</ui:define>
+</ui:composition>

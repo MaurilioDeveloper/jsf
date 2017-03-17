@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">Cadastro de Perfil Objeto</ui:define>
+
+	<ui:define name="head"></ui:define>
+
+	<ui:define name="content">
+		<h:panelGroup id="pnPrincipal">
+			<h:inputHidden id="_id" value="#{perfilObjetoMB.entity.id}" />
+
+			<h:panelGroup id="pnPerfilObjeto">
+				<p:dialog widgetVar="dlg" modal="true" id="dlgPerfil" responsive="true" styleClass="Wid780">
+					<p:panelGrid columns="2" layout="grid" styleClass="ui-panelgrid-blank form-group" id="pnlPerfil">
+						<h:panelGroup>
+							<p:outputLabel for="perfil" value="Perfil" />
+							<p:selectOneMenu id="perfil" value="#{perfilObjetoMB.perfilSelecionado}" label="Perfil" required="true" layout="grid" styleClass="Wid340" converter="perfil">
+								<f:selectItem noSelectionOption="true" itemLabel="Selecione um Perfil" itemValue="#{null}" />
+								<f:selectItems value="#{perfilObjetoMB.perfis}" var="perfil" itemLabel="#{perfil.nome}" itemValue="#{perfil}" />
+							</p:selectOneMenu>
+						</h:panelGroup>
+
+						<h:panelGroup>
+							<p:outputLabel for="objetos" value="Objetos" />
+							<p:selectCheckboxMenu filter="true" filterMatchMode="contains" id="objetos" value="#{perfilObjetoMB.objetosSelecionados}" label="Objetos" required="true" styleClass="Wid340"
+								converter="objeto">
+								<f:selectItems value="#{perfilObjetoMB.objetos}" var="objeto" itemLabel="#{objeto.objeto}" itemValue="#{objeto}" />
+							</p:selectCheckboxMenu>
+						</h:panelGroup>
+
+					</p:panelGrid>
+					<h:panelGroup styleClass="MarLeft15">
+						<p:commandButton id="persist" icon="ui-icon-save" value="Salvar" actionListener="#{perfilObjetoMB.actionPersist}" update=":exemplojsf:pnPrincipal" process="@this, :exemplojsf:pnlPerfil"
+							oncomplete="handleDialogSubmit(xhr, status, args)" styleClass="MarTop10 MarBottom10" />
+					</h:panelGroup>
+				</p:dialog>
+			</h:panelGroup>
+
+			<p:commandButton icon="ui-icon-add" resetValues="true" styleClass="BotaoCrud secondary flat" actionListener="#{perfilObjetoMB.actionNew}" process="@this"
+				oncomplete="PF('dlg').show();" update=":exemplojsf:pnPrincipal" />
+
+			<p:commandButton icon="ui-icon-edit" resetValues="true" styleClass="BotaoCrud orange-btn" onclick="PF('dlg').show();" rendered="#{perfilObjetoMB.entity.perfil.id != null}"
+				type="button" />
+
+			<p:commandButton icon="ui-icon-remove" styleClass="BotaoCrud red-btn" rendered="#{perfilObjetoMB.entity.perfil.id != null}" actionListener="#{perfilObjetoMB.actionRemove}"
+				update="tbPerfil" process="@this" />
+
+			<p:dataTable emptyMessage="Nenhum perfil Encontrado" id="tbPerfil" value="#{perfilObjetoMB.entityList}" var="perfil" rows="10" paginatorPosition="bottom"
+				paginatorAlwaysVisible="true" paginator="true" rowKey="#{perfil}" selection="#{perfilObjetoMB.entity}" selectionMode="single">
+				<f:facet name="header">Lista de Perfil Objetos</f:facet>
+				<p:ajax event="rowSelect" update=":exemplojsf:pnPrincipal" process="@this" resetValues="true" />
+				<p:column style="width:16px">
+					<p:rowToggler />
+				</p:column>
+				<p:column filterBy="#{perfil.perfil.nome}" sortBy="#{perfil.perfil.nome}" filterMatchMode="contains" headerText="Nome">
+					<h:outputText value="#{perfil.perfil.nome}" />
+				</p:column>
+				<p:rowExpansion>
+					<p:dataTable emptyMessage="Nenhum perfil Encontrado" id="tbObjetos" value="#{perfil.objetos}" var="objeto" rows="5" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+						paginator="true">
+						<f:facet name="header">Lista de Objetos</f:facet>
+						<p:column filterBy="#{objeto.descricao}" filterMatchMode="contains" headerText="Nome" sortBy="#{objeto.descricao}">
+							<h:outputText value="#{objeto.descricao}" />
+						</p:column>
+						<p:column filterBy="#{objeto.objeto}" sortBy="#{objeto.objeto}" filterMatchMode="contains" headerText="Objeto">
+							<h:outputText value="#{objeto.objeto}" />
+						</p:column>
+						<p:column filterBy="#{objeto.statusStr}" filterMatchMode="contains" headerText="Status" sortBy="#{objeto.statusStr}">
+							<h:outputText value="#{objeto.statusStr}" />
+						</p:column>
+					</p:dataTable>
+				</p:rowExpansion>
+			</p:dataTable>
+		</h:panelGroup>
+		<script type="text/javascript">
+			function handleDialogSubmit(xhr, status, args) {
+				if (args.validationFailed) {
+					PF('dlg').show();
+				} else {
+					PF('dlg').hide();
+				}
+			}
+		</script>
+	</ui:define>
+</ui:composition>
